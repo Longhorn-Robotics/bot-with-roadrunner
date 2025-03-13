@@ -58,6 +58,20 @@ public class TeleopSIGMA extends OpMode {
     double robotReferenceYaw = 0;
     double robotCurrentYaw = 0;
 
+    // Only allows the rail to be moved if the claw is out of the way and vice versa
+    enum ArticulationFocus {
+        CLAW, BUCKET, NONE
+    }
+    ArticulationFocus focus = ArticulationFocus.NONE;
+    private boolean focusQualifier(ArticulationFocus focusGroup) {
+        if (focus == focusGroup) return true;
+        else if (focus == ArticulationFocus.NONE) {
+            focus = focusGroup;
+            return true;
+        }
+        return false;
+    }
+
     double railPosition = RAIL_MIN;
     double extendPosition = EXTEND_IN;
     double pinchPosition = PINCH_OPEN;
@@ -83,28 +97,32 @@ public class TeleopSIGMA extends OpMode {
                 } else {
                     extendPosition = EXTEND_IN + (EXTEND_OUT - EXTEND_IN) * 0.75;
                     pivotState = 1;
+                    focus = ArticulationFocus.NONE;
                 }
             }),
             // Toggle between float and down
-            new ButtonAction(() -> gamepad2.triangle, () -> pivotState = (new int[]{1, 0, 0})[pivotState]),
-            new ButtonAction(() -> gamepad2.dpad_left, () -> pivotState++),
-            new ButtonAction(() -> gamepad2.dpad_right, () -> pivotState--),
-            new ButtonAction(() -> gamepad2.circle, () -> {
+            new ButtonAction(() -> (gamepad2.triangle && focusQualifier(ArticulationFocus.CLAW)), () -> pivotState = (new int[]{1, 0, 0})[pivotState]),
+            new ButtonAction(() -> (gamepad2.dpad_left && focusQualifier(ArticulationFocus.CLAW)), () -> pivotState++),
+            new ButtonAction(() -> (gamepad2.dpad_right && focusQualifier(ArticulationFocus.CLAW)), () -> pivotState--),
+            new ButtonAction(() -> (gamepad2.circle && focusQualifier(ArticulationFocus.CLAW)), () -> {
+                // Protects from smashing the inside of the bucket if some bum forgets about the impeccable pull out game
+                if ((extendPosition - EXTEND_IN) / (EXTEND_OUT - EXTEND_IN) < 0.2) return;
                 if (pinchPosition == PINCH_CLOSED) pinchPosition = PINCH_OPEN;
                 else pinchPosition = PINCH_CLOSED;
             }),
             new ButtonAction(() -> gamepad1.y, () -> specimenGrabbing = !specimenGrabbing),
-            new ButtonAction(() -> gamepad2.cross, () -> {
+            new ButtonAction(() -> (gamepad2.cross && focusQualifier(ArticulationFocus.CLAW)), () -> {
                 pinchPosition = (PINCH_CLOSED + PINCH_OPEN) * 0.5;
                 Utils.setTimeout(200, () -> {
                     extendPosition -= 0.04;
                     Utils.setTimeout(300, () -> {
                         pivotState = 1;
                         bucketState = 1;
+                        focus = ArticulationFocus.BUCKET;
                     });
                 });
             }),
-            new ButtonAction(() -> gamepad1.square, () -> bucketState = (new int[]{2, 2, 0})[bucketState])
+            new ButtonAction(() -> (gamepad1.square && focusQualifier(ArticulationFocus.BUCKET)), () -> bucketState = (new int[]{2, 2, 0})[bucketState])
     };
 
     // Another cool functional programming interface
@@ -137,7 +155,7 @@ public class TeleopSIGMA extends OpMode {
             dcMotor.setTargetPosition((int) RAIL_MIN);
         }));
 
-        robotReferenceYaw = robot.getOrinatation().getYaw(AngleUnit.RADIANS);
+        robotReferenceYaw = robot.getOrientation().getYaw(AngleUnit.RADIANS);
     }
 
     // Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
@@ -162,7 +180,7 @@ public class TeleopSIGMA extends OpMode {
 
         // Only update yaw rotation if the robot stationary or spinning
         // This helps prevent wobbly motion when trying to move in straight lines
-        if ((joystick_x == 0.0 && joystick_y == 0.0) || joystick_yaw != 0.0) robotCurrentYaw = robot.getOrinatation().getYaw(AngleUnit.RADIANS);
+        if ((joystick_x == 0.0 && joystick_y == 0.0) || joystick_yaw != 0.0) robotCurrentYaw = robot.getOrientation().getYaw(AngleUnit.RADIANS);
 
         double theta = -(robotReferenceYaw - robotCurrentYaw);
         double sinT = Math.sin(theta);
@@ -179,9 +197,12 @@ public class TeleopSIGMA extends OpMode {
 
     @SuppressLint("DefaultLocale")
     public void rail() {
-        // Handled by targetedMotors
-        railPosition += (gamepad2.right_trigger - gamepad2.left_trigger) * 20.0f;
-        telemetry.addLine(String.format("Target RAIL Position: %d", (int) railPosition));
+        if (focusQualifier(ArticulationFocus.BUCKET)){
+            // Handled by targetedMotors
+            railPosition += (gamepad2.right_trigger - gamepad2.left_trigger) * 20.0f;
+            if ((railPosition - RAIL_MIN)/(RAIL_MAX - RAIL_MIN) < 0.07) focus = ArticulationFocus.NONE;
+            telemetry.addLine(String.format("Target RAIL Position: %d", (int) railPosition));
+        }
     }
 
     @SuppressLint("DefaultLocale")

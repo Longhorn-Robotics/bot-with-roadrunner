@@ -4,7 +4,6 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 
 import java.util.function.Consumer;
 
-// Note: Maybe pull this outside?
 public class GroupMotor {
     DcMotor[] motors;
 

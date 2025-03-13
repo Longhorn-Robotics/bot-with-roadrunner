@@ -82,7 +82,7 @@ public class RobotHardwareSIGMA {
         specimenGrabber = hwMap.get(Servo.class, "specimenSPECIMEN");
     }
 
-    public YawPitchRollAngles getOrinatation() {
+    public YawPitchRollAngles getOrientation() {
         return imu.getRobotYawPitchRollAngles();
     }
 
