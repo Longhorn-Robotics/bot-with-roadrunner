@@ -122,7 +122,10 @@ public class TeleopSIGMA extends OpMode {
                     });
                 });
             }),
-            new ButtonAction(() -> (gamepad1.square && focusQualifier(ArticulationFocus.BUCKET)), () -> bucketState = (new int[]{2, 2, 0})[bucketState])
+            new ButtonAction(() -> (gamepad1.square && focusQualifier(ArticulationFocus.BUCKET)), () -> {
+                bucketState = (new int[]{2, 2, 0})[bucketState];
+                if (bucketState == 0) focus = ArticulationFocus.NONE;
+            })
     };
 
     // Another cool functional programming interface
