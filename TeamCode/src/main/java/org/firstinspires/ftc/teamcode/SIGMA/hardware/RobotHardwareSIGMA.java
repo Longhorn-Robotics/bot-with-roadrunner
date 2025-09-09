@@ -67,6 +67,7 @@ public class RobotHardwareSIGMA {
             RevHubOrientationOnRobot orientationOnRobot = new RevHubOrientationOnRobot(RevHubOrientationOnRobot.LogoFacingDirection.LEFT, RevHubOrientationOnRobot.UsbFacingDirection.UP);
             imu.initialize(new IMU.Parameters(orientationOnRobot));
         } catch (IllegalArgumentException e) {
+
         }
     }
 }
