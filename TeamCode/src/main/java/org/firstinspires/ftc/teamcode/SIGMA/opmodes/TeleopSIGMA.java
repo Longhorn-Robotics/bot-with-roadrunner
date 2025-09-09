@@ -76,7 +76,7 @@ public class TeleopSIGMA extends OpMode {
         // Send telemetry message to signify robot waiting
         telemetry.addData("Say", "Hello thomas");
 
-        robotReferenceYaw = robot.getOrientation().getYaw(AngleUnit.RADIANS);
+        //robotReferenceYaw = robot.getOrientation().getYaw(AngleUnit.RADIANS);
     }
 
     // Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
@@ -89,7 +89,7 @@ public class TeleopSIGMA extends OpMode {
     public void start() {
     }
 
-    public void wheels() {
+    /*public void wheels() {
         double joystick_y = 0.0;
         double joystick_x = 0.0;
         double joystick_yaw = 0.0;
@@ -123,7 +123,7 @@ public class TeleopSIGMA extends OpMode {
         robot.lbDrive.setPower(throttle + strafe - joystick_yaw);
         robot.rfDrive.setPower(-throttle - strafe - joystick_yaw);
         robot.rbDrive.setPower(-throttle + strafe - joystick_yaw);
-    }
+    }*/
 
     private double launcherTargetSpeed = 0;
     private double launcherRampSpeed = 1;
@@ -139,7 +139,7 @@ public class TeleopSIGMA extends OpMode {
     @Override
     public void loop() {
         // Final Robot Instructions
-        wheels();
+        //wheels();
 
         // HACK: VERY JANK launcher speed control
         launcherTargetSpeed += ((gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0)) * launcherRampSpeed;
