@@ -1,18 +1,19 @@
 package org.firstinspires.ftc.teamcode.SIGMA.utils;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import java.util.function.Consumer;
 
 public class GroupMotor {
-    DcMotor[] motors;
+    DcMotorEx[] motors;
 
-    public GroupMotor(DcMotor... _motors) {
+    public GroupMotor(DcMotorEx... _motors) {
         motors = _motors;
     }
 
     public void apply(Consumer<DcMotor> function) {
-        for (DcMotor motor : motors)
+        for (DcMotorEx motor : motors)
             function.accept(motor);
     }
 }
