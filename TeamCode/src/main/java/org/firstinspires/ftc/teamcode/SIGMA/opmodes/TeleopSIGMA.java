@@ -4,10 +4,12 @@ import android.annotation.SuppressLint;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.SIGMA.hardware.RobotHardwareSIGMA;
 import org.firstinspires.ftc.teamcode.SIGMA.utils.ButtonAction;
+import org.firstinspires.ftc.teamcode.SIGMA.utils.PIDController;
 import org.firstinspires.ftc.teamcode.SIGMA.utils.TargetedMotor;
 
 /*
@@ -123,16 +125,35 @@ public class TeleopSIGMA extends OpMode {
         robot.rbDrive.setPower(-throttle + strafe - joystick_yaw);
     }
 
+    private double launcherTargetSpeed = 0;
+    private double launcherRampSpeed = 1;
+
+    private double launcherMaxSpeed = 100;
+    private double launcherMinSpeed = 0;
+
+    // TODO: Tune ts
+    private PIDController launcherPID = new PIDController(1.0, 0.0, 0.0);
+    private ElapsedTime frameTimer = new ElapsedTime();
+
     // Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
     @Override
     public void loop() {
         // Final Robot Instructions
         wheels();
 
+        // HACK: VERY JANK launcher speed control
+        launcherTargetSpeed += ((gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0)) * launcherRampSpeed;
+        if (launcherTargetSpeed < launcherMinSpeed) launcherTargetSpeed = launcherMinSpeed;
+        else if (launcherTargetSpeed > launcherMaxSpeed) launcherTargetSpeed = launcherMaxSpeed;
+
+        double control = launcherPID.update(launcherTargetSpeed, robot.launcher.getVelocity(), frameTimer.seconds());
+        robot.launcher.setPower(control);
+
         ButtonAction.doActions(buttonActions);
         TargetedMotor.runArray(targetedMotors);
 
         telemetry.update();
+        frameTimer.reset();
     }
 
     // Code to run ONCE after the driver hits STOP
