@@ -5,7 +5,11 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 
-public class Utils {
+// TODO: Better Macro Creation
+// Sort of like:
+// Macro m = new Macro().action(delay, {})
+//                      .action(delay, {});
+public class Timeout {
     private static final ScheduledExecutorService scheduler =
             Executors.newScheduledThreadPool(1);
 
