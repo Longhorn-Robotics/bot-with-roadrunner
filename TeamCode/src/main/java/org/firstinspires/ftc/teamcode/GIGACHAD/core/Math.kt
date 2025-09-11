@@ -5,6 +5,13 @@ import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
 
+data class Rotation2d(@JvmField val real: Double, @JvmField val imag: Double) {
+    companion object {
+        @JvmStatic
+        fun exp(theta: Double) = Rotation2d(cos(theta), sin(theta))
+    }
+}
+
 data class Vector2d(
     @JvmField val x: Double,
     @JvmField val y: Double,
@@ -22,12 +29,7 @@ data class Vector2d(
     fun norm() = this / mag()
 
     // Warning: not normalized
-    fun angleCast() = Rotation2d(x, y);
+    fun angleCast() = Rotation2d(x, y)
 }
 
-data class Rotation2D(@JvmField val real: Double, @JvmField val imag: Double) {
-    companion object {
-        @JvmStatic
-        fun exp(theta: Double) = Rotation2d(cos(theta), sin(theta))
-    }
-}
+
