@@ -1,15 +1,5 @@
-package org.firstinspires.ftc.teamcode.GIGACHAD.core;
+package org.firstinspires.ftc.teamcode.GIGACHAD.core
 
-import com.acmerobotics.roadrunner.Vector2d;
+class BotState(val systems: List<gcSystem>) {
 
-import java.util.List;
-
-public class BotState {
-
-    //
-
-    List<gcSystem> systems;
-    public void GIGACHAD() {
-
-    }
 }
