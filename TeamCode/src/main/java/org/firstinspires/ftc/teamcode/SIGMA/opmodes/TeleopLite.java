@@ -14,7 +14,7 @@ public class TeleopLite extends OpMode {
     RobotHardwareLite robot = new RobotHardwareLite();
     double railPos = 0.0f;
 
-    // Code to run ONCE when the driver hits INIT
+    // Code to run once when the driver hits INIT
     @Override
     public void init() {
         robot.init(hardwareMap);
