@@ -55,7 +55,7 @@ public class RobotHardware {
         rail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         rail.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-        // Initialize arm motor to run with encoder
+        // Initialize arm motor to run with the encoder
         arm = hwMap.get(DcMotor.class, "armARM");
         arm.setDirection(DcMotor.Direction.FORWARD);
         arm.setTargetPosition(0);
