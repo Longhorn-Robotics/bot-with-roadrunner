@@ -21,6 +21,7 @@ public class TeleopLite extends OpMode {
         // Send telemetry message to signify robot waiting
         telemetry.addData("Say", "Hello thomas");
         telemetry.addLine(String.format("Zero Position: %d", robot.rail.getCurrentPosition()));
+
     }
 
     // Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY

@@ -15,7 +15,8 @@ public class MotorTest extends OpMode {
     }@Override
     public void start() {
         TestMotor.setPower(1);
-    }@Override
+    }
+    @Override
     public void init_loop() {
 
     }
