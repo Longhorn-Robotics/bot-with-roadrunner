@@ -1,12 +1,15 @@
 package org.firstinspires.ftc.teamcode.GIGACHAD.core
 
-import com.acmerobotics.roadrunner.Vector2d
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlin.math.tan
 
 
+fun cot(angleRadians: Double): Double {
+    return 1.0 / tan(angleRadians)
+}
 
 // ~10 * machine epsilon
 private const val EPS = 2.2e-15
@@ -56,6 +59,7 @@ data class Rotation2d(@JvmField val real: Double, @JvmField val imag: Double) {
 
     /** Rotates a vector*/
     operator fun times(v: Vector2) = Vector2(real * v.x - imag * v.y, imag * v.x + real * v.y)
+
     /** Composes two rotations */
     operator fun times(r: Rotation2d) =
         Rotation2d(real * r.real - imag * r.imag, real * r.imag + imag * r.real)
@@ -71,7 +75,7 @@ data class Rotation2d(@JvmField val real: Double, @JvmField val imag: Double) {
 data class Vector2(
     @JvmField val x: Double,
     @JvmField val y: Double,
-    ) {
+) {
     operator fun plus(v: Vector2) = Vector2(x + v.x, y + v.y)
     operator fun minus(v: Vector2) = Vector2(x - v.x, y - v.y)
     operator fun unaryMinus() = Vector2(-x, -y)
@@ -87,6 +91,12 @@ data class Vector2(
     // Warning: not normalized
     fun angleCast() = Rotation2d(x, y)
 }
+
+// Checklist of operators:
+// Exp and Log
+// identity
+// times for Pose, Vel + Vel Addition/subtraction
+// Pose . Vel left/right addition/subtraction
 
 /**
  * @usesMathJax
@@ -118,11 +128,70 @@ data class Pose(
     @JvmField val heading: Rotation2d,
 ) {
 
+    companion object {
+        @JvmStatic
+        fun id(): Pose = Pose(Vector2(0.0, 0.0), Rotation2d(1.0, 0.0))
+
+        @JvmStatic
+        fun Exp(t: PoseVel): Pose {
+
+            // Here we have to deal with a singularity as angularVel -> 0.0
+            // In the math, that gives us an indeterminate form (0/0) for
+            // which the limit gives us 1. The snz function handles this nicely.
+
+            val w = t.angularVel + snz(t.angularVel)
+            val c = 1 - cos(w)
+            val s = sin(w)
+            val translation = Vector2(
+                (s * t.linearVel.x - c * t.linearVel.y) / w,
+                (c * t.linearVel.x + s * t.linearVel.y) / w,
+            )
+            val heading = Rotation2d(1 - c, s)
+
+            return Pose(translation, heading)
+        }
+
+    }
+
     operator fun times(p: Pose) = Pose(heading * p.position + position, heading * p.heading)
     operator fun times(v: Vector2) = heading * v + position
 
+    // Right +
+    operator fun plus(t: PoseVel): Pose = this * Pose.Exp(t)
+
+    // Right -
+    operator fun minus(p: Pose): PoseVel = (this.inverse() * p).Log()
+
     fun inverse() = Pose(heading.inverse() * -position, heading.inverse())
+
+    // Returns the *principle* logarithm; That is, the PoseVel
+    // with the smallest angular velocity possible
+    fun Log(): PoseVel {
+        // Here is where the multi-valued comes in, we could make omega any whole number of
+        // rotations away
+        val omega = heading.log()
+
+        val halfw = 0.5 * omega + snz(omega)
+        val ct = cot(halfw)
+        val linearVel = Vector2(
+            (ct * position.x + position.y) * halfw,
+            (-position.x + ct * position.y) * halfw
+        )
+
+        return PoseVel(linearVel, omega)
+    }
 }
 
 
-data class Twist(@JvmField val line: Vector2d, @JvmField val angle: Double)
+data class PoseVel(@JvmField val linearVel: Vector2, @JvmField val angularVel: Double) {
+    companion object {
+        @JvmStatic
+        fun id(): PoseVel = PoseVel(Vector2(0.0, 0.0), 0.0)
+    }
+
+    operator fun plus(t: PoseVel) = PoseVel(linearVel + t.linearVel, angularVel + t.angularVel)
+    operator fun minus(t: PoseVel) = PoseVel(linearVel - t.linearVel, angularVel - t.angularVel)
+    operator fun unaryMinus() = PoseVel(-linearVel, -angularVel)
+
+    operator fun times(t: Double) = PoseVel(linearVel * t, angularVel * t)
+}
