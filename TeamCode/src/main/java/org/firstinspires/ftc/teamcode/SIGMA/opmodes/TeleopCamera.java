@@ -29,6 +29,7 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.vision.VisionPortal;
 import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.vision.apriltag.AprilTagGameDatabase;
+import org.firstinspires.ftc.vision.apriltag.AprilTagLibrary;
 import org.firstinspires.ftc.vision.apriltag.AprilTagProcessor;
 
 import java.util.List;
@@ -58,30 +59,24 @@ public class TeleopCamera extends LinearOpMode {
     double cx = 644.1777;
     double cy = 357.2814359;
 
-    /**
-     * Variables to store the position and orientation of the camera on the robot. Setting these
-     * values requires a definition of the axes of the camera and robot:
-     *
-     * Camera axes:
-     * Origin location: Center of the lens
-     * Axes orientation: +x right, +y down, +z forward (from camera's perspective)
-     *
-     * Robot axes (this is typical, but you can define this however you want):
-     * Origin location: Center of the robot at field height
-     * Axes orientation: +x right, +y forward, +z upward
-     *
-     * Position:
-     * If all values are zero (no translation), that implies the camera is at the center of the
-     * robot. Suppose your camera is positioned 5 inches to the left, 7 inches forward, and 12
-     * inches above the ground - you would need to set the position to (-5, 7, 12).
-     *
-     * Orientation:
-     * If all values are zero (no rotation), that implies the camera is pointing straight up. In
-     * most cases, you'll need to set the pitch to -90 degrees (rotation about the x-axis), meaning
-     * the camera is horizontal. Use a yaw of 0 if the camera is pointing forwards, +90 degrees if
-     * it's pointing straight left, -90 degrees for straight right, etc. You can also set the roll
-     * to +/-90 degrees if it's vertical, or 180 degrees if it's upside-down.
-     */
+    /// Variables to store the position and orientation of the camera on the robot. Setting these
+    /// values requires a definition of the axes of the camera and robot:
+    /// Camera axes:
+    /// Origin location: Center of the lens
+    /// Axes orientation: +x right, +y down, +z forward (from camera's perspective)
+    /// Robot axes (this is typical, but you can define this however you want):
+    /// Origin location: Center of the robot at field height
+    /// Axes orientation: +x right, +y forward, +z upward
+    /// Position:
+    /// If all values are zero (no translation), that implies the camera is at the center of the
+    /// robot. Suppose your camera is positioned 5 inches to the left, 7 inches forward, and 12
+    /// inches above the ground - you would need to set the position to (-5, 7, 12).
+    /// Orientation:
+    /// If all values are zero (no rotation), that implies the camera is pointing straight up. In
+    /// most cases, you'll need to set the pitch to -90 degrees (rotation about the x-axis), meaning
+    /// the camera is horizontal. Use a yaw of 0 if the camera is pointing forwards, +90 degrees if
+    /// it's pointing straight left, -90 degrees for straight right, etc. You can also set the roll
+    /// to +/-90 degrees if it's vertical, or 180 degrees if it's upside-down.
     private Position cameraPosition = new Position(DistanceUnit.INCH,
             0, 0, 0, 0);
     private YawPitchRollAngles cameraOrientation = new YawPitchRollAngles(AngleUnit.DEGREES,
@@ -122,6 +117,20 @@ public class TeleopCamera extends LinearOpMode {
 
     private void initAprilTag() {
 
+
+        AprilTagLibrary ourLib = new AprilTagLibrary.Builder()
+                .addTag(21, "Mosaic GPP",
+                        6.5, DistanceUnit.INCH)
+                .addTag(22, "Mosaic PGP",
+                        6.4, DistanceUnit.INCH)
+                .addTag(23, "Mosaic PPG",
+                        6, DistanceUnit.INCH)
+                .addTag(20, "Blue",
+                        6, DistanceUnit.INCH)
+                .addTag(24, "Red",
+                        6, DistanceUnit.INCH)
+                .build();
+
         // Create the AprilTag processor.
         aprilTag = new AprilTagProcessor.Builder()
                 // The following default settings are available to un-comment and edit as needed.
@@ -129,7 +138,7 @@ public class TeleopCamera extends LinearOpMode {
                 .setDrawCubeProjection(true)
                 .setDrawTagOutline(true)
                 .setTagFamily(AprilTagProcessor.TagFamily.TAG_36h11)
-                .setTagLibrary(AprilTagGameDatabase.getCurrentGameTagLibrary())
+                .setTagLibrary(ourLib)
                 .setOutputUnits(DistanceUnit.INCH, AngleUnit.DEGREES)
 
                 // == CAMERA CALIBRATION ==
@@ -182,6 +191,7 @@ public class TeleopCamera extends LinearOpMode {
 
     }   // end method initAprilTag()
 
+    @SuppressWarnings("DefaultLocale")
     private void telemetryAprilTag() {
 
         List<AprilTagDetection> currentDetections = aprilTag.getDetections();
