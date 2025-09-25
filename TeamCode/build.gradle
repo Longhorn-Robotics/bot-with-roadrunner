@@ -11,9 +11,19 @@
 
 // Custom definitions may go here
 
+//buildscript {
+//    ext.kotlin_version = '2.2.20'
+//}
+
+//plugins {
+//    // ... other plugins
+//    id 'org.jetbrains.kotlin.android' version '2.2.20' apply false // Use the latest stable Kotlin version
+//}
+
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
+apply plugin: 'kotlin-android'
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
@@ -36,4 +46,6 @@ dependencies {
     implementation "com.acmerobotics.roadrunner:core:1.0.1"
     implementation "com.acmerobotics.roadrunner:actions:1.0.1"
     implementation "com.acmerobotics.dashboard:dashboard:0.4.16"
+
+//    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 }

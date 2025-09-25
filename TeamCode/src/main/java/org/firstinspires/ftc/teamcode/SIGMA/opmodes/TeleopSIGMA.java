@@ -6,6 +6,8 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
+import com.acmerobotics.dashboard.FtcDashboard;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.SIGMA.hardware.RobotHardwareSIGMA;
 import org.firstinspires.ftc.teamcode.SIGMA.utils.ButtonAction;
@@ -32,6 +34,7 @@ import org.firstinspires.ftc.teamcode.SIGMA.utils.TargetedMotor;
 @TeleOp(name = "TeleopSIGMA", group = "Pushbot")
 public class TeleopSIGMA extends OpMode {
 
+    FtcDashboard dashboard;
     static final float adjustMultiplier = 0.225f;
 
     /* Declare OpMode members. */
@@ -40,7 +43,7 @@ public class TeleopSIGMA extends OpMode {
     double robotReferenceYaw = 0;
     double robotCurrentYaw = 0;
 
-    boolean ftc_enabled = false;
+    boolean fieldCentricDrive_enabled = false;
     boolean slowmode = false;
     boolean inverse1 = false;
     boolean inverse2 = false;
@@ -55,24 +58,16 @@ public class TeleopSIGMA extends OpMode {
     // This time for the common pattern of targeted motors
 
     @SuppressLint("DefaultLocale")
-    private final TargetedMotor[] targetedMotors = {
-
-//            new TargetedMotor(RAIL_MIN, RAIL_MAX, () -> railPosition, x -> railPosition = x, a -> {
-//                robot.railMotors.apply(motor -> {
-////                motor.setTargetPosition((int) railPosition);
-//                    if (motor.getCurrentPosition() > railPosition) motor.setPower(0.4);
-//                    else motor.setPower(0.8);
-//                });
-//                robot.bucketRailL.setTargetPosition((int) railPosition);
-//                robot.bucketRailR.setTargetPosition((int) railPosition + 20);
-//            }),
-//            new TargetedMotor(EXTEND_OUT, EXTEND_IN, () -> extendPosition, a -> extendPosition = a, a -> robot.clawExtend.setPosition(a))
-    };
+    private final TargetedMotor[] targetedMotors = {};
 
     // Code to run ONCE when the driver hits INIT
     @Override
     public void init() {
         robot.init(hardwareMap);
+
+        dashboard = FtcDashboard.getInstance();
+        telemetry = dashboard.getTelemetry();
+
         // Send telemetry message to signify robot waiting
         telemetry.addData("Say", "Hello thomas");
 
@@ -102,7 +97,7 @@ public class TeleopSIGMA extends OpMode {
         double strafe;
         double throttle;
 
-        if (ftc_enabled) {
+        if (fieldCentricDrive_enabled) {
             // Only update yaw rotation if the robot stationary or spinning
             // This helps prevent wobbly motion when trying to move in straight lines
             if ((joystick_x == 0.0 && joystick_y == 0.0) || joystick_yaw != 0.0)
@@ -126,34 +121,42 @@ public class TeleopSIGMA extends OpMode {
     }
 
     private double launcherTargetSpeed = 0;
-    private double launcherRampSpeed = 1;
+    private final double launcherRampSpeed = 1;
 
-    private double launcherMaxSpeed = 100;
-    private double launcherMinSpeed = 0;
+    private final double launcherMaxSpeed = 100;
+    private final double launcherMinSpeed = 0;
 
     // TODO: Tune ts
     private PIDController launcherPID = new PIDController(1.0, 0.0, 0.0);
-    private ElapsedTime frameTimer = new ElapsedTime();
+    private final ElapsedTime frameTimer = new ElapsedTime();
 
     // Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
     @Override
     public void loop() {
         // Final Robot Instructions
         wheels();
-
-        // HACK: VERY JANK launcher speed control
-        launcherTargetSpeed += ((gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0)) * launcherRampSpeed;
-        if (launcherTargetSpeed < launcherMinSpeed) launcherTargetSpeed = launcherMinSpeed;
-        else if (launcherTargetSpeed > launcherMaxSpeed) launcherTargetSpeed = launcherMaxSpeed;
-
-        double control = launcherPID.update(launcherTargetSpeed, robot.launcher.getVelocity(), frameTimer.seconds());
-        robot.launcher.setPower(control);
+        launcher();
 
         ButtonAction.doActions(buttonActions);
         TargetedMotor.runArray(targetedMotors);
 
         telemetry.update();
         frameTimer.reset();
+    }
+
+    private void launcher() {
+        // HACK: VERY JANK launcher speed control
+        launcherTargetSpeed += ((gamepad1.dpad_up ? 1 : 0) - (gamepad1.dpad_down ? 1 : 0)) * launcherRampSpeed;
+        if (launcherTargetSpeed < launcherMinSpeed) launcherTargetSpeed = launcherMinSpeed;
+        else if (launcherTargetSpeed > launcherMaxSpeed) launcherTargetSpeed = launcherMaxSpeed;
+
+        double realSpeed = robot.launcher.getVelocity();
+        double control = launcherPID.update(launcherTargetSpeed, realSpeed, frameTimer.seconds());
+        robot.launcher.setPower(control);
+
+        /* Dashboard */
+        telemetry.addData("launcherVel", realSpeed);
+        telemetry.addData("launcherTargetVel", launcherTargetSpeed);
     }
 
     // Code to run ONCE after the driver hits STOP
