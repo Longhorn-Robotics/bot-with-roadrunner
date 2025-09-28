@@ -27,6 +27,9 @@ apply plugin: 'kotlin-android'
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 
     packagingOptions {
         jniLibs.useLegacyPackaging true
@@ -46,6 +49,7 @@ dependencies {
     implementation "com.acmerobotics.roadrunner:core:1.0.1"
     implementation "com.acmerobotics.roadrunner:actions:1.0.1"
     implementation "com.acmerobotics.dashboard:dashboard:0.4.16"
+    implementation 'androidx.core:core-ktx:1.17.0'
 
 //    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
 }
