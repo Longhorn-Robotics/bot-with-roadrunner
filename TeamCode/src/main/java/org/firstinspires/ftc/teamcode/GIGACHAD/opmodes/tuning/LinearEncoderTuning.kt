@@ -1,40 +1,70 @@
-package org.firstinspires.ftc.teamcode.GIGACHAD.opmodes.tuning;
+package org.firstinspires.ftc.teamcode.GIGACHAD.opmodes.tuning
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.hardware.lynx.LynxModule
+import com.qualcomm.robotcore.eventloop.opmode.OpMode
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp
+import com.qualcomm.robotcore.util.ElapsedTime
+import org.firstinspires.ftc.teamcode.GIGACHAD.core.EncoderReadings
+import org.firstinspires.ftc.teamcode.GIGACHAD.core.Pose
+import org.firstinspires.ftc.teamcode.GIGACHAD.core.Pose.Companion.id
+import org.firstinspires.ftc.teamcode.GIGACHAD.hardware.EncoderTuningHardware
+import kotlin.math.exp
 
-import org.firstinspires.ftc.teamcode.GIGACHAD.hardware.EncoderTuningHardware;
 
 @TeleOp(name = "TeleopSIGMA", group = "Pushbot")
-public class LinearEncoderTuning extends OpMode {
+class LinearEncoderTuning : OpMode() {
+    var robot: EncoderTuningHardware? = null
 
-    EncoderTuningHardware robot;
+    var expectedPose: Pose = id()
+    val inchPerTick: Double = 1.0
+    var timer: ElapsedTime = ElapsedTime(ElapsedTime.Resolution.MILLISECONDS)
+    var lastTime: Double = timer.time()
 
-    @Override
-    public void init() {
-        robot.init(hardwareMap);
+    val allHubs = hardwareMap.getAll<LynxModule>(LynxModule::class.java)
+
+    override fun init() {
+        robot!!.init(hardwareMap)
+
+
+        for (hub in allHubs) {
+            hub.setBulkCachingMode(LynxModule.BulkCachingMode.MANUAL)
+        }
     }
 
     // Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
-    @Override
-    public void init_loop() {
+    override fun init_loop() {
     }
 
     // Code to run ONCE when the driver hits PLAY
-    @Override
-    public void start() {
+    override fun start() {
+        lastTime = timer.time()
     }
 
     // Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
-    @Override
-    public void loop() {
-        telemetry.addData("Left Encoder: ", robot.encoderLeft.getCurrentPosition());
-        telemetry.addData("Right Encoder: ", robot.encoderRight.getCurrentPosition());
-        telemetry.addData("Perp Encoder: ", robot.encoderPerp.getCurrentPosition());
+    override fun loop() {
+        for (hub in allHubs) {
+            hub.clearBulkCache()
+        }
+
+        val deltatime = (timer.time() - lastTime) / 1000.0
+        lastTime = timer.time()
+
+        telemetry.addData("Left Encoder: ", robot!!.encoderLeft.getCurrentPosition())
+        telemetry.addData("Right Encoder: ", robot!!.encoderRight.getCurrentPosition())
+        telemetry.addData("Perp Encoder: ", robot!!.encoderPerp.getCurrentPosition())
+
+        val encoderReadings = EncoderReadings(
+            inchPerTick * robot!!.encoderLeft.getCurrentPosition().toDouble(),
+            inchPerTick * robot!!.encoderRight.getCurrentPosition().toDouble(),
+            inchPerTick * robot!!.encoderPerp.getCurrentPosition().toDouble()
+        )
+
+        expectedPose += encoderReadings.toPoseVel() * deltatime
+
+        telemetry.addData("Tracked Position: ", expectedPose)
     }
 
     // Code to run ONCE after the driver hits STOP
-    @Override
-    public void stop() {
+    override fun stop() {
     }
 }

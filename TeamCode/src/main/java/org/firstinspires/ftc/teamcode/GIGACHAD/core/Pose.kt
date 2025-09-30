@@ -69,8 +69,9 @@ data class Pose(
 
     fun inverse() = Pose(heading.inverse() * -position, heading.inverse())
 
-    // Returns the *principle* logarithm; That is, the PoseVel
-    // with the smallest angular velocity possible
+    /** Returns the *principle* logarithm: That is, the PoseVel
+     * with the smallest angular velocity possible
+     */
     fun Log(): PoseVel {
         // Here is where the multi-valued comes in, we could make omega any whole number of
         // rotations away
@@ -85,6 +86,8 @@ data class Pose(
 
         return PoseVel(linearVel, omega)
     }
+
+    override fun toString(): String = String.format("Pose (%.2f in, %.2f in, %.2f deg)", position.x, position.y, heading.log())
 }
 
 data class PoseVel(@JvmField val linearVel: Vector2, @JvmField val angularVel: Double) {
