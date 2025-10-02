@@ -14,7 +14,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
-import org.firstinspires.ftc.teamcode.SIGMA.hardware    .RobotHardwareCamera;
+import org.firstinspires.ftc.teamcode.SIGMA.hardware.RobotHardwareCamera;
 import org.firstinspires.ftc.teamcode.SIGMA.hardware.RobotHardwareSIGMA;
 import org.firstinspires.ftc.teamcode.SIGMA.utils.ButtonAction;
 import org.firstinspires.ftc.teamcode.SIGMA.utils.PIDController;
