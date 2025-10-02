@@ -6,7 +6,7 @@
 
 buildscript {
 
-    ext.kotlin_version = '2.2.20'
+    ext.kotlin_version = '1.9.22'
 
     repositories {
         mavenCentral()
@@ -15,7 +15,8 @@ buildscript {
     dependencies {
         // Note for FTC Teams: Do not modify this yourself.
         classpath 'com.android.tools.build:gradle:8.7.0'
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+//        classpath "androidx.core:core-ktx:1.15.0"
     }
 }
 
@@ -27,6 +28,21 @@ plugins {
 // This is now required because aapt2 has to be downloaded from the
 // google() repository beginning with version 3.2 of the Android Gradle Plugin
 allprojects {
+    // New block starts here
+//    configurations.configureEach {
+//        resolutionStrategy {
+//            // Force core-ktx to a known compatible version (e.g., 1.15.0 or lower)
+//            // This prevents newer dependencies from forcing an incompatible version.
+//            force 'androidx.core:core-ktx:1.15.0'
+//            force 'androidx.core:core:1.15.0'
+//        }
+//    }
+    // ... existing repositories block ...
+    repositories {
+        mavenCentral()
+        google()
+    }
+
     repositories {
         mavenCentral()
         google()
