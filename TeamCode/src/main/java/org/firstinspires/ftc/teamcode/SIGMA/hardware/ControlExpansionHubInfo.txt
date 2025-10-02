@@ -3,6 +3,7 @@ Control Hub Ports
  - Motor Port 1: motorFL (front-left wheel)
  - Motor Port 2: motorBR (back-right wheel)
  - Motor Port 3: motorBL (back-left wheel)
+ - USB 3.0: Webcam 1 (webcam)
  (All four are GoBILDA 5202 Series)
 
 Expansion Hub Ports
