@@ -14,13 +14,21 @@ public class TeleopLite extends OpMode {
     RobotHardwareLite robot = new RobotHardwareLite();
     double railPos = 0.0f;
 
+    //YOUSEF TEST
+    double currentSpeed = 0;
+    boolean isAdd = false;
+    boolean isSubtract = false;
+    boolean isKickerExtended = false;
+
+    boolean x_pressed = false;
+
     // Code to run once when the driver hits INIT
     @Override
     public void init() {
         robot.init(hardwareMap);
         // Send telemetry message to signify robot waiting
-        telemetry.addData("Say", "Hello thomas");
-        telemetry.addLine(String.format("Zero Position: %d", robot.rail.getCurrentPosition()));
+        //telemetry.addData("Say", "Hello thomas");
+        //telemetry.addLine(String.format("Zero Position: %d", robot.rail.getCurrentPosition()));
     }
 
     // Code to run REPEATEDLY after the driver hits INIT, but before they hit PLAY
@@ -37,7 +45,50 @@ public class TeleopLite extends OpMode {
     // Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
     @Override
     public void loop() {
-        // Final Robot Instructions
+        if(gamepad1.right_bumper && !isAdd)
+        {
+            currentSpeed += 0.1;
+            isAdd = true;
+        }
+        else if(!gamepad1.right_bumper)
+        {
+            isAdd = false;
+        }
+
+        if(gamepad1.left_bumper && !isSubtract)
+        {
+            currentSpeed -= 0.1;
+            isSubtract = true;
+        }
+        else if(!gamepad1.left_bumper)
+        {
+            isSubtract = false;
+        }
+        currentSpeed = Math.min(currentSpeed, 1);
+        currentSpeed = Math.max(currentSpeed, -1);
+
+        robot.motorFlywheel1.setPower(currentSpeed);
+        robot.motorFlywheel2.setPower(-currentSpeed);
+
+        if(gamepad1.x && !x_pressed)
+        {
+            isKickerExtended = !isKickerExtended;
+        }
+        x_pressed = gamepad1.x;
+
+        if(isKickerExtended)
+        {
+            robot.kicker.setPosition(0.5);
+        }
+        else
+        {
+            robot.kicker.setPosition(0);
+        }
+
+        telemetry.addData("Current Speed: ", currentSpeed);
+        telemetry.addData("Is Kicker Extended? ", isKickerExtended);
+
+        /*// Final Robot Instructions
         double final_throttle = 0.0f;
         double final_strafe = 0.0f;
         double final_yaw = 0.0f;
@@ -64,7 +115,7 @@ public class TeleopLite extends OpMode {
         else if (railPos > RAIL_MAX) railPos = RAIL_MAX;
 
         robot.rail.setTargetPosition((int) railPos);
-
+        */
         telemetry.update();
     }
 

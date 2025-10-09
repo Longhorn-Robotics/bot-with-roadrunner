@@ -21,8 +21,7 @@ apply plugin: 'com.android.application'
 
 android {
 
-    compileSdkVersion 30
-
+    compileSdkVersion 34
     signingConfigs {
         release {
             def apkStoreFile = System.getenv("APK_SIGNING_STORE_FILE")

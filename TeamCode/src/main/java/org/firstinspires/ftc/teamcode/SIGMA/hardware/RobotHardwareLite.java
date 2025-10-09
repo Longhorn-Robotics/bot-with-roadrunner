@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.SIGMA.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 public class RobotHardwareLite {
@@ -12,6 +13,11 @@ public class RobotHardwareLite {
     public DcMotor rfDrive;
     public DcMotor rail;
 
+    //YOUSEF MOTORS AND SERVOS
+    public DcMotor motorFlywheel1;
+    public DcMotor motorFlywheel2;
+    public Servo kicker;
+
     private ElapsedTime period = new ElapsedTime();
 
     public RobotHardwareLite() {}
@@ -20,6 +26,18 @@ public class RobotHardwareLite {
         // Save reference to hardware map
         hwMap = ahwMap;
 
+        motorFlywheel1 = hwMap.get(DcMotor.class, "motorFlywheel1");
+        motorFlywheel2 = hwMap.get(DcMotor.class, "motorFlywheel2");
+        motorFlywheel1.setDirection(DcMotor.Direction.FORWARD);
+        motorFlywheel2.setDirection(DcMotor.Direction.FORWARD);
+        motorFlywheel1.setPower(0);
+        motorFlywheel2.setPower(0);
+        motorFlywheel1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFlywheel2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
+        kicker = hwMap.get(Servo.class, "kicker");
+
+        /*
         // Initialize drive motors
         lfDrive = hwMap.get(DcMotor.class, "motorFL");
         lbDrive = hwMap.get(DcMotor.class, "motorBL");
@@ -50,6 +68,6 @@ public class RobotHardwareLite {
         rail.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         rail.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         rail.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-        rail.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        rail.setMode(DcMotor.RunMode.RUN_TO_POSITION);*/
     }
 }
