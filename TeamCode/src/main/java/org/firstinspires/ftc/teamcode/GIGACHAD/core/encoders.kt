@@ -9,15 +9,26 @@ val ENCODER_TICKS_PER_INCH: Double = 0.1;
 
 // Expected Encoder setup:
 //  ^       ^
-//  L       R
-//        /    Distance = D, angle between vertical and perpendicular to this line is phi
+//  L   P>  R
+//   \  |H /    Distance = D, angle between vertical and perpendicular to this line is phi
 //      O
-//      | Distance = H
-//      |
-//      P >
 
 val H: Double = 1.0
 val K: Double = 1.0 // k = 1/(2*D*cos(phi))
+
+/**
+ *
+ *
+ * @property height The vertical distance to the line of encoders
+ * @property width  The width to the parallel encoders
+ * @property inches_per_tick The number of ticks per inch
+ * */
+
+data class EncoderValues(
+    @JvmField val height: Double,
+    @JvmField val width: Double, // k = 1/(2*D*cos(phi))
+    @JvmField val inches_per_tick: Double,
+)
 
 // TODO: Consider reworking the math here to account for
 // slight errors in the actual encoder alignments
@@ -26,8 +37,8 @@ data class EncoderReadings(
     @JvmField val right: Double,
     @JvmField val perp: Double
 ) {
-    fun toPoseVel() = PoseVel(Vector2(
-        perp + H * (left - right) * K,
+    fun toPoseVel(values: EncoderValues) = PoseVel(Vector2(
+        (perp * values.inches_per_tick) + values.height * (right - left) * values.width,
         (right + left) * 0.5
-    ), (right - left) * K)
+    ), (right - left) * values.width)
 }
