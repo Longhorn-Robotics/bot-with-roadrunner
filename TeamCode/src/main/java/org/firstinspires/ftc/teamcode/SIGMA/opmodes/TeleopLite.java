@@ -2,7 +2,7 @@ package org.firstinspires.ftc.teamcode.SIGMA.opmodes;
 
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
+import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.SIGMA.hardware.RobotHardwareLite;
 
 @TeleOp(name = "TeleopLite", group = "Pushbot")
@@ -15,12 +15,15 @@ public class TeleopLite extends OpMode {
     double railPos = 0.0f;
 
     //YOUSEF TEST
-    double currentSpeed = 0;
+    double currentSpeed = 0.7;
+    double increaseRate = 0.001;
     boolean isAdd = false;
     boolean isSubtract = false;
     boolean isKickerExtended = false;
-
     boolean x_pressed = false;
+
+    //YOUSEF TIME
+    private ElapsedTime runtime = new ElapsedTime();
 
     // Code to run once when the driver hits INIT
     @Override
@@ -39,15 +42,16 @@ public class TeleopLite extends OpMode {
     // Code to run ONCE when the driver hits PLAY
     @Override
     public void start() {
-
+        runtime.reset();
     }
 
     // Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
     @Override
     public void loop() {
+        currentSpeed -= gamepad1.left_stick_y * increaseRate;
         if(gamepad1.right_bumper && !isAdd)
         {
-            currentSpeed += 0.1;
+            currentSpeed += 0.05;
             isAdd = true;
         }
         else if(!gamepad1.right_bumper)
@@ -57,7 +61,7 @@ public class TeleopLite extends OpMode {
 
         if(gamepad1.left_bumper && !isSubtract)
         {
-            currentSpeed -= 0.1;
+            currentSpeed -= 0.05;
             isSubtract = true;
         }
         else if(!gamepad1.left_bumper)
@@ -78,11 +82,12 @@ public class TeleopLite extends OpMode {
 
         if(isKickerExtended)
         {
-            robot.kicker.setPosition(0.5);
+            runtime.reset();
+            robot.kicker.setPosition(0.55);
         }
-        else
+        else if(!isKickerExtended && runtime.seconds() > 1)
         {
-            robot.kicker.setPosition(0);
+            robot.kicker.setPosition(0.73);
         }
 
         telemetry.addData("Current Speed: ", currentSpeed);

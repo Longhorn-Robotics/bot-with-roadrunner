@@ -59,7 +59,7 @@ class LinearEncoderTuning : OpMode() {
             inchPerTick * robot.encoderPerp.getCurrentPosition().toDouble()
         )
 
-        expectedPose += encoderReadings.toPoseVel() * deltatime
+//        expectedPose += encoderReadings.toPoseVel() * deltatime
 
         telemetry.addData("Tracked Position: ", expectedPose)
     }
