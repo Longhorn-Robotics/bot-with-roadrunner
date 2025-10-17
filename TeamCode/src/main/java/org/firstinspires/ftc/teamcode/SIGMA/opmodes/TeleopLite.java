@@ -3,6 +3,8 @@ package org.firstinspires.ftc.teamcode.SIGMA.opmodes;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.util.ElapsedTime;
+
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.teamcode.SIGMA.hardware.RobotHardwareLite;
 
 @TeleOp(name = "TeleopLite", group = "Pushbot")
@@ -16,6 +18,9 @@ public class TeleopLite extends OpMode {
 
     //YOUSEF TEST
     double currentSpeed = 0.7;
+    double targetSpeed = 4000;
+    double pidf_last_error_1 = 0;
+    double pidf_last_error_2 = 0;
     double increaseRate = 0.001;
     boolean isAdd = false;
     boolean isSubtract = false;
@@ -71,27 +76,55 @@ public class TeleopLite extends OpMode {
         currentSpeed = Math.min(currentSpeed, 1);
         currentSpeed = Math.max(currentSpeed, -1);
 
-        robot.motorFlywheel1.setPower(currentSpeed);
-        robot.motorFlywheel2.setPower(-currentSpeed);
+        targetSpeed = 6000 * currentSpeed;
+
+        double trueSpeed, error, output;
+
+        // PIDF coeffs
+        double feedforward_coeff = targetSpeed / 6000.0;
+        double proportional_coeff = 0.01;
+        double derivative_coeff = 0.01;
+
+//        telemetry.addData("Current Speed: ", currentSpeed);
+        telemetry.addData("Target Speed: ", targetSpeed);
+        // Motor 1
+        // Converting degrees/sec to rpm
+        trueSpeed = robot.motorFlywheel1.getVelocity(AngleUnit.DEGREES) / 6.0;
+        error = targetSpeed - trueSpeed;
+        output = error * proportional_coeff + (error - pidf_last_error_1) * derivative_coeff + feedforward_coeff;
+        pidf_last_error_1 = error;
+        robot.motorFlywheel1.setPower(output);
+        telemetry.addData("Motor 1 Speed: ", trueSpeed);
+
+        trueSpeed = robot.motorFlywheel2.getVelocity(AngleUnit.DEGREES) / 6.0;
+        error = targetSpeed - trueSpeed;
+        output = error * proportional_coeff + (error - pidf_last_error_2) * derivative_coeff + feedforward_coeff;
+        pidf_last_error_2 = error;
+        robot.motorFlywheel2.setPower(-output);
+        telemetry.addData("Motor 2 Speed: ", trueSpeed);
+
 
         if(gamepad1.x && !x_pressed)
         {
             isKickerExtended = !isKickerExtended;
+            runtime.reset();
+        } else if (runtime.seconds() > 1) {
+            isKickerExtended = false;
         }
         x_pressed = gamepad1.x;
 
         if(isKickerExtended)
         {
-            runtime.reset();
-            robot.kicker.setPosition(0.55);
+            robot.kicker.setPosition(0.07); //0.55
         }
-        else if(!isKickerExtended && runtime.seconds() > 1)
+        else if(!isKickerExtended)
         {
-            robot.kicker.setPosition(0.73);
+            robot.kicker.setPosition(0.247); //0.73
         }
 
-        telemetry.addData("Current Speed: ", currentSpeed);
         telemetry.addData("Is Kicker Extended? ", isKickerExtended);
+        telemetry.addData("Runtime: ", runtime);
+
 
         /*// Final Robot Instructions
         double final_throttle = 0.0f;

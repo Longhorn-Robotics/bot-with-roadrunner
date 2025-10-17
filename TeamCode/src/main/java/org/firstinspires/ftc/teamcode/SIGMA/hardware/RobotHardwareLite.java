@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.SIGMA.hardware;
 
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -14,8 +15,8 @@ public class RobotHardwareLite {
     public DcMotor rail;
 
     //YOUSEF MOTORS AND SERVOS
-    public DcMotor motorFlywheel1;
-    public DcMotor motorFlywheel2;
+    public DcMotorEx motorFlywheel1;
+    public DcMotorEx motorFlywheel2;
     public Servo kicker;
 
     private ElapsedTime period = new ElapsedTime();
@@ -26,8 +27,8 @@ public class RobotHardwareLite {
         // Save reference to hardware map
         hwMap = ahwMap;
 
-        motorFlywheel1 = hwMap.get(DcMotor.class, "motorFlywheel1");
-        motorFlywheel2 = hwMap.get(DcMotor.class, "motorFlywheel2");
+        motorFlywheel1 = hwMap.get(DcMotorEx.class, "motorFlywheel1");
+        motorFlywheel2 = hwMap.get(DcMotorEx.class, "motorFlywheel2");
         motorFlywheel1.setDirection(DcMotor.Direction.FORWARD);
         motorFlywheel2.setDirection(DcMotor.Direction.FORWARD);
         motorFlywheel1.setPower(0);
