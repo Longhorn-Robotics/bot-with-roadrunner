@@ -54,10 +54,10 @@ public class TeleopCamera extends LinearOpMode {
     long capReqTime;
 
     //Camera Values
-    double fx = 1415.979838;
-    double fy = 1411.104157;
-    double cx = 644.1777;
-    double cy = 357.2814359;
+    double fx = 822.317; //1415.979838;
+    double fy = 822.317; //1411.104157;
+    double cx = 319.495; //644.1777;
+    double cy = 242.502; //357.2814359;
 
     /// Variables to store the position and orientation of the camera on the robot. Setting these
     /// values requires a definition of the axes of the camera and robot:
