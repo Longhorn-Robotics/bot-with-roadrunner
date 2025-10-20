@@ -26,7 +26,7 @@ val K: Double = 1.0 // k = 1/(2*D*cos(phi))
 
 data class EncoderValues(
     @JvmField val height: Double,
-    @JvmField val width: Double, // k = 1/(2*D*cos(phi))
+    @JvmField val width: Double,
     @JvmField val inches_per_tick: Double,
 )
 
@@ -37,8 +37,8 @@ data class EncoderReadings(
     @JvmField val right: Double,
     @JvmField val perp: Double
 ) {
-    fun toPoseVel(values: EncoderValues) = PoseVel(Vector2(
-        (perp * values.inches_per_tick) + values.height * (right - left) * values.width,
-        (right + left) * 0.5
-    ), (right - left) * values.width)
+    fun toPoseVel(values: EncoderValues) = Twist(Vector2(
+        (perp * values.inches_per_tick) + values.height * (right - left) / (2 * values.width),
+        (right + left) * 0.5 * values.inches_per_tick,
+    ), (right - left)  / (2 * values.width))
 }

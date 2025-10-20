@@ -38,7 +38,7 @@ data class Pose(
         fun id(): Pose = Pose(Vector2(0.0, 0.0), Rotation2d(1.0, 0.0))
 
         @JvmStatic
-        fun Exp(t: PoseVel): Pose {
+        fun Exp(t: Twist): Pose {
 
             // Here we have to deal with a singularity as angularVel -> 0.0
             // In the math, that gives us an indeterminate form (0/0) for
@@ -62,17 +62,17 @@ data class Pose(
     operator fun times(v: Vector2) = heading * v + position
 
     // Right +
-    operator fun plus(t: PoseVel): Pose = this * Pose.Exp(t)
+    operator fun plus(t: Twist): Pose = this * Pose.Exp(t)
 
     // Right -
-    operator fun minus(p: Pose): PoseVel = (this.inverse() * p).Log()
+    operator fun minus(p: Pose): Twist = (this.inverse() * p).Log()
 
     fun inverse() = Pose(heading.inverse() * -position, heading.inverse())
 
     /** Returns the *principle* logarithm: That is, the PoseVel
      * with the smallest angular velocity possible
      */
-    fun Log(): PoseVel {
+    fun Log(): Twist {
         // Here is where the multi-valued comes in, we could make omega any whole number of
         // rotations away
         val omega = heading.log()
@@ -84,21 +84,26 @@ data class Pose(
             (-position.x + ct * position.y) * halfw
         )
 
-        return PoseVel(linearVel, omega)
+        return Twist(linearVel, omega)
     }
+
+
 
     override fun toString(): String = String.format("Pose (%.2f in, %.2f in, %.2f deg)", position.x, position.y, heading.log())
 }
 
-data class PoseVel(@JvmField val linearVel: Vector2, @JvmField val angularVel: Double) {
+/*
+* Twist is like a velocity of a Pose
+* */
+data class Twist(@JvmField val linearVel: Vector2, @JvmField val angularVel: Double) {
     companion object {
         @JvmStatic
-        fun id(): PoseVel = PoseVel(Vector2(0.0, 0.0), 0.0)
+        fun id(): Twist = Twist(Vector2(0.0, 0.0), 0.0)
     }
 
-    operator fun plus(t: PoseVel) = PoseVel(linearVel + t.linearVel, angularVel + t.angularVel)
-    operator fun minus(t: PoseVel) = PoseVel(linearVel - t.linearVel, angularVel - t.angularVel)
-    operator fun unaryMinus() = PoseVel(-linearVel, -angularVel)
+    operator fun plus(t: Twist) = Twist(linearVel + t.linearVel, angularVel + t.angularVel)
+    operator fun minus(t: Twist) = Twist(linearVel - t.linearVel, angularVel - t.angularVel)
+    operator fun unaryMinus() = Twist(-linearVel, -angularVel)
 
-    operator fun times(t: Double) = PoseVel(linearVel * t, angularVel * t)
+    operator fun times(t: Double) = Twist(linearVel * t, angularVel * t)
 }
