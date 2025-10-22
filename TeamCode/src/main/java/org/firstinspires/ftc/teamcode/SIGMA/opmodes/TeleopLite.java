@@ -9,15 +9,10 @@ import org.firstinspires.ftc.teamcode.SIGMA.hardware.RobotHardwareLite;
 
 @TeleOp(name = "TeleopLite", group = "Pushbot")
 public class TeleopLite extends OpMode {
-    static double RAIL_MIN = 0.0f;
-    static double RAIL_MAX = 3000.0f;
-
-    final double joystickBaseSpeed = 0.3f;
     RobotHardwareLite robot = new RobotHardwareLite();
-    double railPos = 0.0f;
 
     //YOUSEF TEST
-    double currentSpeed = 0.7;
+    double currentSpeed = -0.7;
     double targetSpeed = 4000;
     double pidf_last_error_1 = 0;
     double pidf_last_error_2 = 0;
@@ -26,6 +21,8 @@ public class TeleopLite extends OpMode {
     boolean isSubtract = false;
     boolean isKickerExtended = false;
     boolean x_pressed = false;
+
+    double intakeTargetSpeed = 20.0;
 
     //YOUSEF TIME
     private ElapsedTime runtime = new ElapsedTime();
@@ -53,7 +50,10 @@ public class TeleopLite extends OpMode {
     // Code to run REPEATEDLY after the driver hits PLAY but before they hit STOP
     @Override
     public void loop() {
-        currentSpeed -= gamepad1.left_stick_y * increaseRate;
+        /*intakeTargetSpeed += gamepad1.right_stick_x * 1.0;
+        robot.intakeMotor.setVelocity(20.0, AngleUnit.DEGREES);
+        currentSpeed -= gamepad1.left_stick_y * increaseRate;*/
+
         if(gamepad1.right_bumper && !isAdd)
         {
             currentSpeed += 0.05;
@@ -76,20 +76,23 @@ public class TeleopLite extends OpMode {
         currentSpeed = Math.min(currentSpeed, 1);
         currentSpeed = Math.max(currentSpeed, -1);
 
-        targetSpeed = 6000 * currentSpeed;
+//        targetSpeed = 6000 * currentSpeed;
 
-        double trueSpeed, error, output;
+        //robot.intakeMotor.setVelocity(currentSpeed * 360 / 60, AngleUnit.DEGREES);
+        robot.intakeMotor.setPower(currentSpeed);
 
-        // PIDF coeffs
-        double feedforward_coeff = targetSpeed / 6000.0;
-        double proportional_coeff = 0.01;
-        double derivative_coeff = 0.01;
+//        double trueSpeed, error, output;
 
-//        telemetry.addData("Current Speed: ", currentSpeed);
-        telemetry.addData("Target Speed: ", targetSpeed);
+//        // PIDF coeffs
+//        double feedforward_coeff = targetSpeed / 6000.0;
+//        double proportional_coeff = 0.01;
+//        double derivative_coeff = 0.01;
+
+        telemetry.addData("Current Speed: ", currentSpeed);
+        //telemetry.addData("Target Speed: ", targetSpeed);
         // Motor 1
         // Converting degrees/sec to rpm
-        trueSpeed = robot.motorFlywheel1.getVelocity(AngleUnit.DEGREES) / 6.0;
+        /*trueSpeed = robot.motorFlywheel1.getVelocity(AngleUnit.DEGREES) / 6.0;
         error = targetSpeed - trueSpeed;
         output = error * proportional_coeff + (error - pidf_last_error_1) * derivative_coeff + feedforward_coeff;
         pidf_last_error_1 = error;
@@ -101,9 +104,16 @@ public class TeleopLite extends OpMode {
         output = error * proportional_coeff + (error - pidf_last_error_2) * derivative_coeff + feedforward_coeff;
         pidf_last_error_2 = error;
         robot.motorFlywheel2.setPower(-output);
-        telemetry.addData("Motor 2 Speed: ", trueSpeed);
+        telemetry.addData("Motor 2 Speed: ", trueSpeed);*/
 
+//        trueSpeed = robot.intakeMotor.getVelocity(AngleUnit.DEGREES) / 6.0;
+//        error = targetSpeed - trueSpeed;
+//        output = error * proportional_coeff + (error - pidf_last_error_1) * derivative_coeff + feedforward_coeff;
+//        pidf_last_error_1 = error;
+//        robot.intakeMotor.setPower(output);
+//        telemetry.addData("Motor 1 Speed: ", trueSpeed);
 
+        /*
         if(gamepad1.x && !x_pressed)
         {
             isKickerExtended = !isKickerExtended;
@@ -123,37 +133,9 @@ public class TeleopLite extends OpMode {
         }
 
         telemetry.addData("Is Kicker Extended? ", isKickerExtended);
-        telemetry.addData("Runtime: ", runtime);
+        telemetry.addData("Runtime: ", runtime);'=
+         */
 
-
-        /*// Final Robot Instructions
-        double final_throttle = 0.0f;
-        double final_strafe = 0.0f;
-        double final_yaw = 0.0f;
-
-//        double joystickMultiplier = joystickBaseSpeed + (1.0f - gamepad1.right_trigger);
-        double joystickMultiplier = joystickBaseSpeed;
-
-        final_throttle += (gamepad1.left_stick_y * joystickMultiplier);
-        final_strafe += (gamepad1.left_stick_x * joystickMultiplier);
-        final_yaw += (gamepad1.right_stick_x * joystickMultiplier);
-
-        robot.lfDrive.setPower(final_throttle - final_strafe - final_yaw);
-        robot.lbDrive.setPower(final_throttle + final_strafe - final_yaw);
-        robot.rfDrive.setPower(-final_throttle - final_strafe - final_yaw);
-        robot.rbDrive.setPower(-final_throttle + final_strafe - final_yaw);
-
-        telemetry.addLine(String.format("Right Trigger: %6.2f", gamepad1.right_trigger));
-        telemetry.addLine(String.format("Target Position: %6.2f", railPos));
-        telemetry.addLine(String.format("Rail Position: %d", robot.rail.getCurrentPosition()));
-
-        railPos += (gamepad1.right_trigger - gamepad1.left_trigger) * 10.0f;
-
-        if (railPos < RAIL_MIN) railPos = RAIL_MIN;
-        else if (railPos > RAIL_MAX) railPos = RAIL_MAX;
-
-        robot.rail.setTargetPosition((int) railPos);
-        */
         telemetry.update();
     }
 
