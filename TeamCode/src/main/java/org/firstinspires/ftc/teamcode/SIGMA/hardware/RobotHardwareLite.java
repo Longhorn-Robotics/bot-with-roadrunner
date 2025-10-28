@@ -13,7 +13,9 @@ public class RobotHardwareLite {
 //    public DcMotorEx motorFlywheel1;
 //    public DcMotorEx motorFlywheel2;
     public DcMotorEx intakeMotor;
+    public DcMotorEx elevatorMotor;
     public Servo kicker;
+    public Servo flicker;
 
     private ElapsedTime period = new ElapsedTime();
 
@@ -32,8 +34,13 @@ public class RobotHardwareLite {
 //        motorFlywheel1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //        motorFlywheel2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 //
-//        kicker = hwMap.get(Servo.class, "kicker");
+        kicker = hwMap.get(Servo.class, "kicker");
+        flicker = hwMap.get(Servo.class, "flicker");
 
+
+        elevatorMotor = hwMap.get(DcMotorEx.class, "elevatorMotor");
+        elevatorMotor.setDirection(DcMotor.Direction.FORWARD);
+        elevatorMotor.setPower(0);
 
         intakeMotor = hwMap.get(DcMotorEx.class, "intakeMotor");
         intakeMotor.setDirection(DcMotor.Direction.FORWARD);
