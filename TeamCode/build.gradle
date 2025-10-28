@@ -68,4 +68,6 @@ dependencies {
     implementation("com.acmerobotics.slothboard:dashboard:0.2.4+0.4.17")
 
     implementation("dev.frozenmilk.sinister:Sloth:0.2.4")
+    implementation("dev.frozenmilk.dairy:Core:2.2.4")
+    implementation("dev.frozenmilk.mercurial:Mercurial:1.0.3")
 }
