@@ -69,7 +69,7 @@ public class TeleopLite extends OpMode {
         //Gun Motor
         if(gamepad1.dpad_up && !isGunAdd)
         {
-            currentGunSpeed += 0.05;
+            currentGunSpeed += 0.025;
             isGunAdd = true;
         }
         else if(!gamepad1.dpad_up)
@@ -79,7 +79,7 @@ public class TeleopLite extends OpMode {
 
         if(gamepad1.dpad_down && !isGunSubtract)
         {
-            currentGunSpeed -= 0.05;
+            currentGunSpeed -= 0.025;
             isGunSubtract = true;
         }
         else if(!gamepad1.dpad_down)
