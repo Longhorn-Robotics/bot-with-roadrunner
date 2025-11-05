@@ -12,8 +12,9 @@ public class TeleopLite extends OpMode {
     RobotHardwareLite robot = new RobotHardwareLite();
 
     //YOUSEF TEST
-    double currentElevatorSpeed = -0.7;
-    double currentIntakeSpeed = -0.7;
+    double currentElevatorSpeed = 0.7;
+    double currentIntakeSpeed = 0.7;
+    double currentGunSpeed = 0.7;
     double targetSpeed = 4000;
     double pidf_last_error_1 = 0;
     double pidf_last_error_2 = 0;
@@ -24,11 +25,14 @@ public class TeleopLite extends OpMode {
     boolean isElevatorAdd = false;
     boolean isElevatorSubtract = false;
 
+    boolean isGunAdd = false;
+    boolean isGunSubtract = false;
+
     boolean isKickerExtended = false;
     boolean x_pressed = false;
 
     boolean isFlickerExtended = false;
-    boolean a_pressed = false;
+    boolean square_pressed = false;
 
     double intakeTargetSpeed = 20.0;
 
@@ -62,6 +66,29 @@ public class TeleopLite extends OpMode {
         robot.intakeMotor.setVelocity(20.0, AngleUnit.DEGREES);
         currentSpeed -= gamepad1.left_stick_y * increaseRate;*/
 
+        //Gun Motor
+        if(gamepad1.dpad_up && !isGunAdd)
+        {
+            currentGunSpeed += 0.05;
+            isGunAdd = true;
+        }
+        else if(!gamepad1.dpad_up)
+        {
+            isGunAdd = false;
+        }
+
+        if(gamepad1.dpad_down && !isGunSubtract)
+        {
+            currentGunSpeed -= 0.05;
+            isGunSubtract = true;
+        }
+        else if(!gamepad1.dpad_down)
+        {
+            isGunSubtract = false;
+        }
+        currentGunSpeed = Math.min(currentGunSpeed, 1);
+        currentGunSpeed = Math.max(currentGunSpeed, 0);
+
         //Intake Motor
         if(gamepad1.right_bumper && !isIntakeAdd)
         {
@@ -83,7 +110,7 @@ public class TeleopLite extends OpMode {
             isIntakeSubtract = false;
         }
         currentIntakeSpeed = Math.min(currentIntakeSpeed, 1);
-        currentIntakeSpeed = Math.max(currentIntakeSpeed, -1);
+        currentIntakeSpeed = Math.max(currentIntakeSpeed, 0);
 
         //Elevator Motor
         if(gamepad1.right_trigger > 0.5 && !isElevatorAdd)
@@ -106,13 +133,23 @@ public class TeleopLite extends OpMode {
             isElevatorSubtract = false;
         }
         currentElevatorSpeed = Math.min(currentElevatorSpeed, 1);
-        currentElevatorSpeed = Math.max(currentElevatorSpeed, -1);
+        currentElevatorSpeed = Math.max(currentElevatorSpeed, 0);
 
 //        targetSpeed = 6000 * currentSpeed;
 
         //robot.intakeMotor.setVelocity(currentSpeed * 360 / 60, AngleUnit.DEGREES);
-        robot.elevatorMotor.setPower(currentElevatorSpeed);
-        robot.intakeMotor.setPower(-currentIntakeSpeed);
+
+        //Set Powers
+        robot.elevatorMotor.setPower(-currentElevatorSpeed);
+        robot.intakeMotor.setPower(currentIntakeSpeed);
+
+        robot.motorFlywheel1.setPower(currentGunSpeed);
+        robot.motorFlywheel2.setPower(-currentGunSpeed);
+
+        //DATA
+        telemetry.addData("Current Intake Speed: ", currentIntakeSpeed);
+        telemetry.addData("Current Elevator Speed: ", currentElevatorSpeed);
+        telemetry.addData("Current Gun Speed: ", currentGunSpeed);
 
 //        double trueSpeed, error, output;
 
@@ -121,8 +158,6 @@ public class TeleopLite extends OpMode {
 //        double proportional_coeff = 0.01;
 //        double derivative_coeff = 0.01;
 
-        telemetry.addData("Current Intake Speed: ", currentIntakeSpeed);
-        telemetry.addData("Current Elevator Speed: ", currentElevatorSpeed);
         //telemetry.addData("Target Speed: ", targetSpeed);
         // Motor 1
         // Converting degrees/sec to rpm
@@ -148,15 +183,14 @@ public class TeleopLite extends OpMode {
 //        telemetry.addData("Motor 1 Speed: ", trueSpeed);
 
         //KICKER
-        /*
-        if(gamepad1.x && !x_pressed)
+        if(gamepad1.cross && !x_pressed)
         {
             isKickerExtended = !isKickerExtended;
             runtime.reset();
         } else if (runtime.seconds() > 1) {
             isKickerExtended = false;
         }
-        x_pressed = gamepad1.x;
+        x_pressed = gamepad1.cross;
 
         if(isKickerExtended)
         {
@@ -165,17 +199,17 @@ public class TeleopLite extends OpMode {
         else if(!isKickerExtended)
         {
             robot.kicker.setPosition(0.247); //0.73
-        }*/
+        }
 
         //FLICKER
-        if(gamepad1.x && !x_pressed)
+        if(gamepad1.square && !square_pressed)
         {
             isFlickerExtended = !isFlickerExtended;
             runtime.reset();
         } else if (runtime.seconds() > 0.25) {
             isFlickerExtended = false;
         }
-        x_pressed = gamepad1.x; //MERCURIO FOR TEO
+        square_pressed = gamepad1.square; //MERCURIO FOR TEO
 
         if(isFlickerExtended)
         {
@@ -185,10 +219,6 @@ public class TeleopLite extends OpMode {
         {
             robot.flicker.setPosition(0.17);
         }
-        /*
-        telemetry.addData("Is Kicker Extended? ", isKickerExtended);
-        telemetry.addData("Runtime: ", runtime);'=
-         */
 
         telemetry.addData("Flicker", isFlickerExtended);
         telemetry.update();

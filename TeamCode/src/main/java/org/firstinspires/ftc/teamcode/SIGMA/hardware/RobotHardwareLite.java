@@ -10,8 +10,8 @@ public class RobotHardwareLite {
     HardwareMap hwMap;
 
     //YOUSEF MOTORS AND SERVOS
-//    public DcMotorEx motorFlywheel1;
-//    public DcMotorEx motorFlywheel2;
+    public DcMotorEx motorFlywheel1;
+    public DcMotorEx motorFlywheel2;
     public DcMotorEx intakeMotor;
     public DcMotorEx elevatorMotor;
     public Servo kicker;
@@ -25,15 +25,15 @@ public class RobotHardwareLite {
         // Save reference to hardware map
         hwMap = ahwMap;
 
-//        motorFlywheel1 = hwMap.get(DcMotorEx.class, "motorFlywheel1");
-//        motorFlywheel2 = hwMap.get(DcMotorEx.class, "motorFlywheel2");
-//        motorFlywheel1.setDirection(DcMotor.Direction.FORWARD);
-//        motorFlywheel2.setDirection(DcMotor.Direction.FORWARD);
-//        motorFlywheel1.setPower(0);
-//        motorFlywheel2.setPower(0);
-//        motorFlywheel1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//        motorFlywheel2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-//
+        motorFlywheel1 = hwMap.get(DcMotorEx.class, "motorFlywheel1");
+        motorFlywheel2 = hwMap.get(DcMotorEx.class, "motorFlywheel2");
+        motorFlywheel1.setDirection(DcMotor.Direction.FORWARD);
+        motorFlywheel2.setDirection(DcMotor.Direction.FORWARD);
+        motorFlywheel1.setPower(0);
+        motorFlywheel2.setPower(0);
+        motorFlywheel1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFlywheel2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+
         kicker = hwMap.get(Servo.class, "kicker");
         flicker = hwMap.get(Servo.class, "flicker");
 
