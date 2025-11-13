@@ -31,12 +31,11 @@ public class RobotHardwareLite {
         motorFlywheel2.setDirection(DcMotor.Direction.FORWARD);
         motorFlywheel1.setPower(0);
         motorFlywheel2.setPower(0);
-        motorFlywheel1.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        motorFlywheel2.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        motorFlywheel1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        motorFlywheel2.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         kicker = hwMap.get(Servo.class, "kicker");
         flicker = hwMap.get(Servo.class, "flicker");
-
 
         elevatorMotor = hwMap.get(DcMotorEx.class, "elevatorMotor");
         elevatorMotor.setDirection(DcMotor.Direction.FORWARD);
